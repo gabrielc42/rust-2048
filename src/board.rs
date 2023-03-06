@@ -49,15 +49,27 @@ impl<'a> Board<'a> {
 
     pub fn render(&self, number_renderer: &NumberRenderer, c: &Context, gl: &mut GlGraphics) {}
 
-    pub fn merge_from_bottom_to_top(&mut self) {}
+    pub fn merge_from_bottom_to_top(&mut self) {
+        let height = self.settings.tile_height;
+        self.merge_col(0, height, 1);
+    }
 
-    pub fn merge_from_top_to_bottom(&mut self) {}
+    pub fn merge_from_top_to_bottom(&mut self) {
+        let height = self.settings.tile_height;
+        self.merge_col(height - 1, -1, -1);
+    }
 
     fn merge_col(&mut self, y_start: i32, y_end: i32, y_step: i32) {}
 
-    pub fn merge_from_left_to_right(&mut self) {}
+    pub fn merge_from_left_to_right(&mut self) {
+        let width = self.settings.tile_width;
+        self.merge_row(width - 1, -1, -1);
+    }
 
-    pub fn merge_from_right_to_left(&mut self) {}
+    pub fn merge_from_right_to_left(&mut self) {
+        let width = self.settings.tile_width;
+        self.merge_row(0, width, 1);
+    }
 
     fn merge_row(&mut self, x_start: i32, x_end: i32, x_step: i32) {}
 
