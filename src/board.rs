@@ -64,7 +64,7 @@ impl<'a> Board<'a> {
 
     fn get_mut_tile<'b>() {}
 
-    fn get_tile_count() -> i32 {
+    fn get_tile_count(&self, x: i32, y: i32) -> i32 {
         let mut count = 0;
         for tile in self.tiles.iter() {
             if tile.tile_x == x && tile.tile_y == y {
