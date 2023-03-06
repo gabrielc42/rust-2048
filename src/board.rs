@@ -56,11 +56,57 @@ impl<'a> Board<'a> {
         step_x: i32,
         step_y: i32,
     ) -> Option<&'b Tile<'a>> {
+        let mut x = x + step_x;
+        let mut y = y + step_y;
+        while x >= 0 && x < self.settings.tile_width && y >= 0 && y < self.settings.tile_height {
+            let tile = self.get_tile(x, y);
+            if tile.is_some() {
+                return tile;
+            }
+
+            x += step_x;
+            y += step_y;
+        }
+        None
     }
 
-    fn get_mut_next_tile<'b>() {}
+    fn get_mut_next_tile<'b>(
+        &'b mut self,
+        x: i32,
+        y: i32,
+        step_x: i32,
+        step_y: i32,
+    ) -> Option<&'b mut Tile<'a>> {
+        let mut x = x + step_x;
+        let mut y = y + step_y;
+        let mut found = false;
+        while x >= 0 && x < self.settings.tile_width && y >= 0 && y < self.settings.tile_height {
+            let tile = self.get_tile(x, y);
 
-    fn get_tile<'b>() {}
+            if tile.is_some() {
+                found = true;
+                break;
+            }
+
+            x += step_x;
+            y += step_y;
+        }
+
+        if found {
+            self.get_mut_tile(x, y)
+        } else {
+            None
+        }
+    }
+
+    fn get_tile<'b>(&'b self, x: i32, y: i32) -> Option<&'b Tile<'a>> {
+        for tile in self.tiles.iter() {
+            if tile.tile_x == x && tile.tile_y == y {
+                return Some(tile);
+            }
+        }
+        None
+    }
 
     fn get_mut_tile<'b>(&'b mut self, x: i32, y: i32) -> Option<&'b mut Tile<'a>> {
         for tile in self.tiles.iter_mut() {
