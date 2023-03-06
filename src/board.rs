@@ -45,7 +45,67 @@ impl<'a> Board<'a> {
         }
     }
 
-    pub fn update(&mut self, dt: f64) {}
+    pub fn update(&mut self, dt: f64) {
+        for tile in self.tiles.iter_mut() {
+            tile.update(dt);
+        }
+
+        if self.is_locking() {
+            return;
+        }
+
+        let mut score_to_added = 0;
+        let mut tiles_need_removed = HashSet::<usize>::new();
+        let mut tiles_need_added = Vec::<Tile>::new();
+
+        for i in 0..self.tiles.len() {
+            let tile1 = &self.tiles[i];
+
+            if tile1.status != TileState::TileStatic {
+                continue;
+            }
+
+            for j in i + 1..self.tiles.len() {
+                let tile2 = &self.tiles[j];
+
+                if tile2.status != TileState::TileStatic
+                    || tile1.tile_x != tile2.tile_x
+                    || tile1.tile_y != tile2.tile_y
+                {
+                    continue;
+                }
+
+                tiles_need_removed.insert(i);
+                tiles_need_removed.insert(j);
+                tiles_need_added.push(Tile::new_combined(
+                    self.settings,
+                    tile1.score + tile2.score,
+                    tile1.tile_x,
+                    tile1.tile_y,
+                ));
+                score_to_added += tile1.score + tile2.score;
+                break;
+            }
+        }
+
+        if tiles_need_removed.len() > 0 {
+            let mut tiles = Vec::<Tile>::new();
+
+            for i in 0..self.tiles.len() {
+                if !tiles_need_removed.contains(&i) {
+                    tiles.push(self.tiles[i].clone());
+                }
+            }
+
+            // (better, but unstable): tiles.append(&mut tiles_need_added);
+            while let Some(tile_to_add) = tiles_need_added.pop() {
+                tiles.push(tile_to_add);
+            }
+
+            self.tiles = tiles;
+            self.add_score(score_to_added);
+        }
+    }
 
     pub fn render(&self, number_renderer: &NumberRenderer, c: &Context, gl: &mut GlGraphics) {
         number_renderer.render(
