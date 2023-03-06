@@ -144,7 +144,96 @@ impl<'a> Board<'a> {
         self.merge_row(0, width, 1);
     }
 
-    fn merge_row(&mut self, x_start: i32, x_end: i32, x_step: i32) {}
+    fn merge_row(&mut self, x_start: i32, x_end: i32, x_step: i32) {
+        if self.is_locking() {
+            return;
+        }
+
+        let mut need_generate = false;
+        let mut steps: Vec<i32> = Vec::with_capacity(self.settings.tile_width as usize);
+        let mut next_step = x_start;
+
+        if x_step < 0 {
+            while next_step > x_end {
+                steps.push(next_step);
+                next_step += x_step
+            }
+        } else {
+            while next_step < x_end {
+                steps.push(next_step);
+                next_step += x_step
+            }
+        }
+
+        loop {
+            // move all tiles to right place
+            for row in 0..self.settings.tile_height {
+                for col in steps.to_vec() {
+                    match self.get_mut_tile(col, row) {
+                        None => match self.get_mut_next_tile(col, row, x_step, 0) {
+                            Some(ref mut tile) => {
+                                println!(
+                                    "move ({}, {}) to ({}, {})",
+                                    tile.tile_x, tile.tile_y, col, row
+                                );
+                                need_generate = true;
+                                tile.start_moving(col, row);
+                            }
+                            _ => {}
+                        },
+                        _ => {}
+                    }
+                }
+            }
+
+            // merge
+            let mut did_merged = false;
+            for row in 0..self.settings.tile_height {
+                let mut found = false;
+                let mut sx = 0;
+                let mut sy = 0;
+                let mut dx = 0;
+                let mut dy = 0;
+                for col in steps.to_vec() {
+                    match self.get_tile(col, row) {
+                        Some(ref d_tile) => match self.get_next_tile(col, row, x_step, 0) {
+                            Some(ref s_tile)
+                                if d_tile.score == s_tile.score
+                                    && self.get_tile_count(d_tile.tile_x, d_tile.tile_y) == 1 =>
+                            {
+                                found = true;
+                                dx = d_tile.tile_x;
+                                dy = d_tile.tile_x;
+                                sx = s_tile.tile_x;
+                                sy = s_tile.tile_y;
+                                break;
+                            }
+                            _ => {}
+                        },
+                        None => {
+                            break;
+                        }
+                    }
+                }
+
+                if found {
+                    need_generate = true;
+                    did_merged = true;
+                    let tile = self.get_mut_tile(sx, sy).unwrap();
+                    tile.start_moving(dx, dy);
+                    println!("merge ({}, {}) to ({}, {})", sx, sy, dx, dy);
+                }
+            }
+
+            if !did_merged {
+                break;
+            }
+        }
+
+        if need_generate {
+            self.generate_tile();
+        }
+    }
 
     fn is_locking(&self) -> bool {
         for tile in self.tiles.iter() {
