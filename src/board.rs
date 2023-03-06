@@ -46,7 +46,14 @@ impl<'a> Board<'a> {
 
     fn merge_row(&mut self, x_start: i32, x_end: i32, x_step: i32) {}
 
-    fn is_locking(&self) -> bool {}
+    fn is_locking(&self) -> bool {
+        for tile in self.tiles.iter() {
+            if tile.status != TileState::TileStatic {
+                return true;
+            }
+        }
+        false
+    }
 
     // returns next tile right besides (x, y)
     fn get_next_tile<'b>(
