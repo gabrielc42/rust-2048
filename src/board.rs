@@ -68,7 +68,14 @@ impl<'a> Board<'a> {
 
     fn render_board() {}
 
-    fn render_tiles() {}
+    fn render_tiles(&self, number_renderer: &NumberRenderer, c: &Context, gl: &mut GlGraphics) {
+        for tile in self.tiles.iter() {
+            tile.render(number_renderer, c, gl);
+        }
+    }
 
-    fn add_score() {}
+    fn add_score(&mut self, score: i32) {
+        self.score += score;
+        println!("Score: {}", self.score);
+    }
 }
