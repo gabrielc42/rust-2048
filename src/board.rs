@@ -62,7 +62,14 @@ impl<'a> Board<'a> {
 
     fn get_tile<'b>() {}
 
-    fn get_mut_tile<'b>() {}
+    fn get_mut_tile<'b>(&'b mut self, x: i32, y: i32) -> Option<&'b mut Tile<'a>> {
+        for tile in self.tiles.iter_mut() {
+            if tile.tile_x == x && tile.tile_y == y {
+                return Some(tile);
+            }
+        }
+        None
+    }
 
     fn get_tile_count(&self, x: i32, y: i32) -> i32 {
         let mut count = 0;
