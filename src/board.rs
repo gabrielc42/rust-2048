@@ -28,7 +28,22 @@ impl<'a> Board<'a> {
         board
     }
 
-    pub fn generate_tile(&mut self) {}
+    pub fn generate_tile(&mut self) {
+        if self.tiles.len() == (self.settings.tile_width * self.settings.tile_height) as usize {
+            return;
+        }
+
+        loop {
+            let x = (random::<u32>() % self.settings.tile_width as u32) as i32;
+            let y = (random::<u32>() % self.settings.tile_height as u32) as i32;
+
+            if self.get_tile(x, y).is_none() {
+                let score = if random::<u32>() % 10 == 0 { 4 } else { 2 };
+                self.tiles.push(Tile::new(self.settings, score, x, y));
+                break;
+            }
+        }
+    }
 
     pub fn update(&mut self, dt: f64) {}
 
