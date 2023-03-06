@@ -47,7 +47,20 @@ impl<'a> Board<'a> {
 
     pub fn update(&mut self, dt: f64) {}
 
-    pub fn render(&self, number_renderer: &NumberRenderer, c: &Context, gl: &mut GlGraphics) {}
+    pub fn render(&self, number_renderer: &NumberRenderer, c: &Context, gl: &mut GlGraphics) {
+        number_renderer.render(
+            self.score as u32,
+            self.settings.best_rect[0] + self.settings.best_rect[2] / 2.0,
+            self.settings.best_rect[1] + self.settings.best_rect[3] / 2.0,
+            self.settings.best_rect[2],
+            self.settings.text_light_color,
+            c,
+            gl,
+        );
+
+        self.render_board(c, gl);
+        self.render_tiles(number_renderer, c, gl);
+    }
 
     pub fn merge_from_bottom_to_top(&mut self) {
         let height = self.settings.tile_height;
