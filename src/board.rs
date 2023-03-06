@@ -66,7 +66,39 @@ impl<'a> Board<'a> {
 
     fn get_tile_count() -> i32 {}
 
-    fn render_board() {}
+    fn render_board(&self, c: &Context, gl: &mut GlGraphics) {
+        Rectangle::new(rgb2rgba(self.settings.label_color)).draw(
+            [
+                self.settings.board_padding,
+                self.settings.board_padding + self.settings.board_offset_y,
+                self.settings.board_size[0],
+                self.settings.board_size[1],
+            ],
+            &DrawState::default(),
+            c.transform,
+            gl,
+        );
+
+        let mut x = self.settings.board_padding + self.settings.tile_padding;
+        let mut y =
+            self.settings.board_padding + self.settings.board_offset_y + self.settings.tile_padding;
+
+        for _ in 0..self.settings.tile_height {
+            for _ in 0..self.settings.tile_width {
+                Rectangle::new(rgb2rgba(self.settings.tiles_colors[0])).draw(
+                    [x, y, self.settings.tile_size, self.settings.tile_size],
+                    &DrawState::default(),
+                    c.transform,
+                    gl,
+                );
+
+                x += self.settings.tile_padding + self.settings.tile_size;
+            }
+
+            x = self.settings.board_padding + self.settings.tile_padding;
+            y += self.settings.tile_padding + self.settings.tile_size;
+        }
+    }
 
     fn render_tiles(&self, number_renderer: &NumberRenderer, c: &Context, gl: &mut GlGraphics) {
         for tile in self.tiles.iter() {
