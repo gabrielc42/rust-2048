@@ -64,7 +64,15 @@ impl<'a> Board<'a> {
 
     fn get_mut_tile<'b>() {}
 
-    fn get_tile_count() -> i32 {}
+    fn get_tile_count() -> i32 {
+        let mut count = 0;
+        for tile in self.tiles.iter() {
+            if tile.tile_x == x && tile.tile_y == y {
+                count += 1;
+            }
+        }
+        count
+    }
 
     fn render_board(&self, c: &Context, gl: &mut GlGraphics) {
         Rectangle::new(rgb2rgba(self.settings.label_color)).draw(
