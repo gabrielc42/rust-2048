@@ -1,7 +1,7 @@
-use number_renderer::NumberRenderer;
+use crate::number_renderer::NumberRenderer;
+use crate::settings::Settings;
 use opengl_graphics::GlGraphics;
 use piston_window::*;
-use settings::Settings;
 
 #[derive(Clone, PartialEq)]
 pub enum TileState {

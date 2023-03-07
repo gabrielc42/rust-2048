@@ -1,11 +1,11 @@
 use std::path::{Path, PathBuf};
 
-use board::Board;
-use number_renderer::NumberRenderer;
+use crate::board::Board;
+use crate::number_renderer::NumberRenderer;
+use crate::settings::Settings;
 use opengl_graphics::GlGraphics;
 use opengl_graphics::Texture as GlTexture;
 use piston_window::*;
-use settings::Settings;
 
 pub struct App<'a> {
     board: Board<'a>,
@@ -85,7 +85,7 @@ impl<'a> App<'a> {
         let mut comment2_path = asset_root.clone();
         comment2_path.push(Path::new("comment2.png"));
 
-        self.number_renderer = Some(NumberRender::new());
+        self.number_renderer = Some(NumberRenderer::new());
         self.logo = Some(GlTexture::from_path(&logo_path).unwrap());
         self.comment1 = Some(GlTexture::from_path(&comment1_path).unwrap());
         self.comment2 = Some(GlTexture::from_path(&comment2_path).unwrap());

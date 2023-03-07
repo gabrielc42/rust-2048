@@ -21,7 +21,7 @@ pub struct Settings {
     pub tile_padding: f64,
     pub tile_background_color: [f32; 3],
     pub tiles_colors: Vec<[f32; 3]>,
-    pub tile_unknow_color: [f32; 3],
+    pub tile_unknown_color: [f32; 3],
     pub tile_move_time: f64,
     pub tile_new_time: f64,
     pub tile_combine_time: f64,
@@ -76,7 +76,7 @@ impl Settings {
                 s.tile_background_color[2] / 255.0,
             ],
             tiles_colors: tiles_colors,
-            tile_unknow_color: [
+            tile_unknown_color: [
                 s.tile_unknow_color[0] / 255.0,
                 s.tile_unknow_color[1] / 255.0,
                 s.tile_unknow_color[2] / 255.0,
@@ -154,9 +154,9 @@ struct SettingsInJson {
     text_light_color: Vec<f32>,
 }
 
-impl SetingsInJson {
+impl SettingsInJson {
     pub fn default_settings() -> SettingsInJson {
-        let mut tiles_colors = Vec::Vec < f32 >> ::new();
+        let mut tiles_colors = Vec::<Vec<f32>>::new();
         // empty color
         tiles_colors.push(vec![204.0, 192.0, 179.0]);
         // 2 color
@@ -245,7 +245,7 @@ impl SetingsInJson {
         // end FIXME
 
         let mut decoder = json::Decoder::new(json::Json::from_reader(&mut reader).unwrap());
-        Decodable::decode(&mut decoder).unwrap();
+        Decodable::decode(&mut decoder).unwrap()
     }
 
     pub fn save(&self) {
