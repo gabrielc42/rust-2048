@@ -1,4 +1,9 @@
-use rustc_serialize::{json, Decodable, Encodable};
+extern crate serde;
+extern crate serde_json;
+
+use serde_derive::{Deserialize, Serialize};
+
+use self::serde_json::Error;
 use std::env::current_exe;
 use std::fs::File;
 use std::io::{BufReader, BufWriter, Write};
@@ -38,7 +43,7 @@ impl Settings {
         Settings::from_settings_in_json(&SettingsInJson::load())
     }
 
-    fn from_settings_in_json<'a>(s: &'a SettingsInJson) -> Settings {
+    fn from_settings_in_json(s: &SettingsInJson) -> Settings {
         let board_size = [
             s.tile_size * s.tile_width as f64 + s.tile_padding * (s.tile_width + 1) as f64,
             s.tile_size * s.tile_height as f64 + s.tile_padding * (s.tile_height + 1) as f64,
@@ -120,7 +125,7 @@ impl Settings {
     }
 }
 
-#[derive(RustcEncodable, RustcDecodable)]
+#[derive(Serialize, Deserialize)]
 struct SettingsInJson {
     asset_folder: String,
 
@@ -244,8 +249,18 @@ impl SettingsInJson {
         let mut reader = BufReader::new(file.unwrap());
         // end FIXME
 
-        let mut decoder = json::Decoder::new(json::Json::from_reader(&mut reader).unwrap());
-        Decodable::decode(&mut decoder).unwrap()
+        let v: Result<SettingsInJson, Error> = serde_json::from_reader(&mut reader);
+        match v {
+            Ok(settings) => {
+                return settings;
+            }
+            Err(e) => {
+                println!("WARNING: Failed to read settings from file. Try to generate a default one. {}", e);
+                let new_settings = SettingsInJson::default_settings();
+                new_settings.save();
+                return new_settings;
+            }
+        }
     }
 
     pub fn save(&self) {
@@ -260,7 +275,7 @@ impl SettingsInJson {
         let file = File::create(&path.with_file_name(SETTING_FILENAME)).unwrap();
         let mut writer = BufWriter::new(file);
 
-        match json::encode(self) {
+        match serde_json::to_string(self) {
             Ok(encoded) => {
                 if let Err(e) = writer.write(encoded.as_bytes()) {
                     println!("WARNING: Failed to save settings: {}", e);
